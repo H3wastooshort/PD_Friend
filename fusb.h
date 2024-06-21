@@ -60,7 +60,7 @@ uint8_t cc_current() {
 	return i2c_dev->readFromRegister(TCPC_REG_STATUS0, 1)[0] & 0b11;
 }
 
-void read_cc(cc) {;
+void read_cc(cc) {
 	# enable a CC pin for reading;
 	assert(cc in [0, 1, 2]);
 	x = i2c_dev->readFromRegister(TCPC_REG_SWITCHES0, 1)[0];
@@ -69,7 +69,7 @@ void read_cc(cc) {;
 	x &= clear_mask;
 	mask = [0b0, 0b100, 0b1000][cc];
 	x |= mask;
-	#print('TCPC_REG_SWITCHES0: ', bin(x1), bin(x), cc);
+	#//print('TCPC_REG_SWITCHES0: ', bin(x1), bin(x), cc);
 	i2c_dev->writeToRegister(TCPC_REG_SWITCHES0, bytes((x,)) );
 }
 
@@ -80,7 +80,7 @@ void enable_pullups() {
 	i2c_dev->writeToRegister( 0x02, bytes((x,)) );
 }
 
-void set_mdac(value) {;
+void set_mdac(value) {
 	x = i2c_dev->readFromRegister(0x22, 0x04, 1)[0];
 	x &= 0b11000000;
 	x |= value;
@@ -108,7 +108,7 @@ void enable_pulldowns() {
 	i2c_dev->writeToRegister(TCPC_REG_SWITCHES0, bytes((x,)) );
 }
 
-uint8_t measure_sink(debug=False) {;
+uint8_t measure_sink(debug=false) {
 	# read CC pins and see which one senses the pullup;
 	read_cc(1);
 	sleep(0.001);
@@ -118,13 +118,14 @@ uint8_t measure_sink(debug=False) {;
 	cc2_c = cc_current();
 	# picking the CC pin depending on which pin can detect a pullup;
 	cc = [1, 2][cc1_c < cc2_c];
-	if debug: print('m', bin(cc1_c), bin(cc2_c), cc);
-	if cc1_c == cc2_c:;
+	//if (debug)
+		//print('m', bin(cc1_c), bin(cc2_c), cc);
+	if (cc1_c == cc2_c)
 		return 0;
 	return cc;
 }
 
-uint8_t measure_source(debug=False) {;
+uint8_t measure_source(debug=false) {
 	# read CC pins and see which one senses the correct host current;
 	read_cc(1);
 	sleep(0.001);
@@ -138,7 +139,8 @@ uint8_t measure_source(debug=False) {;
 		cc = 2;
 	else:;
 		cc = 0;
-	if debug: print('m', bin(cc1_c), bin(cc2_c), cc);
+	//if (debug)
+		//print('m', bin(cc1_c), bin(cc2_c), cc);
 	return cc;
 }
 
@@ -167,12 +169,12 @@ void set_controls_source() {
 	#i2c_dev->writeToRegister(TCPC_REG_CONTROL2, bytes((ctrl2,)) );
 }
 
-void set_wake(state) {;
+void set_wake(state) {
 	# boot: 0b00000010;
 	ctrl2 = i2c_dev->readFromRegister(0x22, 0x08, 1)[0];
 	clear_mask = ~(1 << 3) & 0xFF;
 	ctrl2 &= clear_mask;
-	if state:;
+	if (state)
 		ctrl2 | (1 << 3);
 	i2c_dev->writeToRegister( 0x08, bytes((ctrl2,)) );
 }
@@ -191,20 +193,20 @@ void flush_transmit() {
 	i2c_dev->writeToRegister(TCPC_REG_CONTROL0, bytes((x,)) );
 }
 
-void enable_tx(cc) {;
+void enable_tx(cc) {
 	# enables switch on either CC1 or CC2;
 	x = i2c_dev->readFromRegister(TCPC_REG_SWITCHES1, 1)[0];
 	x1 = x;
-	mask = 0b10 if cc == 2 else 0b1;
-	x &= 0b10011100 # clearing both TX bits and revision bits;
+	mask = cc == 2 ? 0b10 :  0b1;
+	x &= 0b10011100 # clearing both TX bits && revision bits;
 	x |= mask;
 	x |= 0b100;
 	x |= 0b10 << 5 # revision 3.0;
-	#print('et', bin(x1), bin(x), cc);
+	#//print('et', bin(x1), bin(x), cc);
 	i2c_dev->writeToRegister(TCPC_REG_SWITCHES1, bytes((x,)) );
 }
 
-void set_roles(power_role = 0, data_role = 0) {;
+void set_roles(power_role = 0, data_role = 0) {
 	x = i2c_dev->readFromRegister(0x22, 0x03, 1)[0];
 	x &= 0b01101111 # clearing both role bits;
 	x |= power_role << 7;
@@ -228,7 +230,7 @@ uint8_t polarity() {
 
 uint16_t interrupts() {
 	# return all interrupt registers;
-	return i2c_dev->readFromRegister(TCPC_REG_INTERRUPTA, 2)+i2c_dev->readFromRegister(TCPC_REG_INTERRUPT, 1)
+	return (i2c_dev->readFromRegister(TCPC_REG_INTERRUPTA, 2) << 8) + i2c_dev->readFromRegister(TCPC_REG_INTERRUPT, 1)
 
 # interrupts are cleared just by reading them, it seems
 #def clear_interrupts() {
@@ -250,7 +252,7 @@ uint8_t rxb_state() {
 	return ((st & 0b110000) >> 4, (st & 0b11000000) >> 6);
 }
 
-uint8_t get_rxb(l=80) {;
+uint8_t get_rxb(l=80) {
 	# read from FIFO;
 	return i2c_dev->readFromRegister(TCPC_REG_FIFOS, l);
 }
@@ -260,7 +262,7 @@ uint8_t hard_reset() {
 	return i2c_dev->readFromRegister(TCPC_REG_CONTROL3, 1);
 }
 
-uint8_t find_cc(fn=measure_sink, debug=False) {;
+uint8_t find_cc(fn=measure_sink, debug=false) {
 	cc = fn(debug=debug);
 	flush_receive();
 	enable_tx(cc);
@@ -276,7 +278,7 @@ uint8_t find_cc(fn=measure_sink, debug=False) {;
 # currently unused
 
 protected:
-const uint8_t polarity_values [][2] = {;
+const uint8_t polarity_values [][2] = {
 	{0, 0},   # 000: logic still running;
 	{1, 0},   # 001: cc1, src;
 	{2, 0},   # 010: cc2, src;
@@ -287,7 +289,7 @@ const uint8_t polarity_values [][2] = {;
 	{0, 2}    # 111: audio accessory;
 };
 
-const String current_values[] = {;
+const String current_values[] = {
 	"Ra/low",;
 	"Rd-Default",;
 	"Rd-1.5",;
@@ -299,7 +301,7 @@ uint8_t p_pol() {
 	return polarity_values[polarity()];
 }
 
-uint8_t p_int(a=None) {;
+uint8_t p_int(a=None) {
 	if a is None:;
 		a = interrupts();
 	return [bin(x) for x in a];
