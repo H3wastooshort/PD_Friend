@@ -35,8 +35,8 @@ protected:
 I2C_TYPE* i2c_dev;
 
 public:
-FUSB302(I2C_TYPE* new_i2c) {
-	i2c_dev = new_i2c;
+FUSB302(I2C_TYPE& new_i2c) {
+	i2c_dev = &new_i2c;
 }
 
 void reset() {
@@ -283,7 +283,7 @@ uint8_t find_cc(cc_measure_fn_t fn=measure_sink) {
 // currently unused
 
 protected:
-const uint8_t polarity_values [][2] = {
+const int8_t polarity_values [8][2] = {
 	{0, 0},   // 000: logic still running
 	{1, 0},   // 001: cc1, src
 	{2, 0},   // 010: cc2, src
@@ -294,7 +294,7 @@ const uint8_t polarity_values [][2] = {
 	{0, 2}    // 111: audio accessory
 };
 
-const String current_values[] = {
+const String current_values[4] = {
 	"Ra/low",
 	"Rd-Default",
 	"Rd-1.5",
@@ -302,7 +302,7 @@ const String current_values[] = {
 };
 
 public:
-uint8_t p_pol() {
+int8_t* p_pol() {
 	return polarity_values[polarity()];
 }
 
