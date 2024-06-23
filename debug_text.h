@@ -9,7 +9,7 @@ const String current_values[4] = {
 
 //packets
 
-const String control_message_types = [
+const String control_message_types[25] = [
     "Reserved",
     "GoodCRC",
     "GotoMin",
@@ -34,10 +34,10 @@ const String control_message_types = [
     "Get_Country_Codes",
     "Get_Sink_Cap_Extended",
     "Get_Source_Info",
-    "Get_Revision",
+    "Get_Revision"
 ]
 
-const String data_message_types = [
+const String data_message_types[16] = [
     "Reserved",
     "Source_Capabilities",
     "Request",
@@ -53,9 +53,8 @@ const String data_message_types = [
     "Revision",
     "Reserved",
     "Reserved",
-    "Vendor_Defined",
+    "Vendor_Defined"
 ]
-
 
 
 //PDOs
@@ -65,7 +64,6 @@ const std::map<pdo_type_t,String> {
 
 
 //VDMs
-
 const String vdm_commands[7] = {
     "Reserved",
     "Discover Identity",
