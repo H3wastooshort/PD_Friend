@@ -1,5 +1,7 @@
 #ifdef FUSB_DEBUG_SERIAL
 
+#include <map>
+
 const String current_values[4] = {
 	"Ra/low",
 	"Rd-Default",
@@ -9,7 +11,7 @@ const String current_values[4] = {
 
 //packets
 
-const String control_message_types[25] = [
+const String control_message_types[25] = {
     "Reserved",
     "GoodCRC",
     "GotoMin",
@@ -35,9 +37,9 @@ const String control_message_types[25] = [
     "Get_Sink_Cap_Extended",
     "Get_Source_Info",
     "Get_Revision"
-]
+};
 
-const String data_message_types[16] = [
+const String data_message_types[16] = {
     "Reserved",
     "Source_Capabilities",
     "Request",
@@ -54,7 +56,7 @@ const String data_message_types[16] = [
     "Reserved",
     "Reserved",
     "Vendor_Defined"
-]
+};
 
 
 //PDOs
@@ -75,8 +77,8 @@ const String vdm_commands[7] = {
 };
 
 const std::map<uint16_t,String> svids = {
-    {0xff00, 'SID'},
-    {0xff01, 'DisplayPort'}
+    {0xff00, "SID"},
+    {0xff01, "DisplayPort"}
 };
 
 const std::map<uint8_t,String> dp_commands = {
@@ -95,21 +97,21 @@ const std::map<uint8_t,String> vdm_dp_pin_assg = {
 	 {0b100000,"F"}
 };
 
-const String vdm_dp_port_cap = {
+const String vdm_dp_port_cap[4] = {
  "RES",
  "UFP",
  "DFP",
  "UFP&DFP"
 };
 
-const String vdm_dp_port_conn = {
+const String vdm_dp_port_conn[4] = {
  "NC",
  "UFP",
  "DFP",
  "UFP&DFP"
 };
 
-const String vdm_dp_port_conf = {
+const String vdm_dp_port_conf[4] = {
  "USB",
  "DFP",
  "DFP",
@@ -117,10 +119,10 @@ const String vdm_dp_port_conf = {
 };
 
 const std::map<uint8_t,String> vdm_dp_sgn = {
- 0b1:"DP",
- 0b10:"USBg2",
- 0b100:"RES1",
- 0b1000:"RES2"
+	{0b1,"DP"},
+	{0b10,"USBg2"},
+	{0b100,"RES1"},
+	{0b1000,"RES2"}
 }
 
 #endif

@@ -120,7 +120,13 @@ uint8_t measure_sink() {
 	// picking the CC pin depending on which pin can detect a pullup;
 	uint8_t cc = cc1_c < cc2_c ? 2 : 1;
 	#ifdef FUSB_DEBUG_SERIAL
-		FUSB_DEBUG_SERIAL.print('m', bin(cc1_c), bin(cc2_c), cc);
+		FUSB_DEBUG_SERIAL.println();
+		FUSB_DEBUG_SERIAL.print("m ");
+		FUSB_DEBUG_SERIAL.print(cc1_c);
+		FUSB_DEBUG_SERIAL.print(' ');
+		FUSB_DEBUG_SERIAL.print(cc2_c);
+		FUSB_DEBUG_SERIAL.print(' ');
+		FUSB_DEBUG_SERIAL.println(cc);
 	#endif
 	if (cc1_c == cc2_c)
 		return 0;
@@ -145,7 +151,13 @@ uint8_t measure_source() {
 	else
 		cc = 0;
 	#ifdef FUSB_DEBUG_SERIAL
-		FUSB_DEBUG_SERIAL.print('m', bin(cc1_c), bin(cc2_c), cc);
+		FUSB_DEBUG_SERIAL.println();
+		FUSB_DEBUG_SERIAL.print("m ");
+		FUSB_DEBUG_SERIAL.print(cc1_c);
+		FUSB_DEBUG_SERIAL.print(' ');
+		FUSB_DEBUG_SERIAL.print(cc2_c);
+		FUSB_DEBUG_SERIAL.print(' ');
+		FUSB_DEBUG_SERIAL.println(cc);
 	#endif
 	return cc;
 }
