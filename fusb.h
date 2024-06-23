@@ -262,6 +262,10 @@ uint8_t get_rxb(uint8_t l=80) {
 	return i2c_dev->readFromRegister(TCPC_REG_FIFOS, l);
 }
 
+void tx_byte(uint8_t data) {
+	i2c_dev->writeToRegister(TCPC_REG_FIFOS, data);
+}
+
 uint8_t hard_reset() {
 	i2c_dev->writeToRegister(TCPC_REG_CONTROL3, 0b1000000);
 	return i2c_dev->readFromRegister(TCPC_REG_CONTROL3, 1);

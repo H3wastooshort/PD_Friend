@@ -247,9 +247,9 @@ def send_command(command, data, msg_id=None, rev=0b10, power_role=0, data_role=0
 
     sop_seq[4] |= len(message)
 
-    i2c.writeto_mem(FUSB302_I2C_SLAVE_ADDR, TCPC_REG_FIFOS, bytes(sop_seq) )
-    i2c.writeto_mem(FUSB302_I2C_SLAVE_ADDR, TCPC_REG_FIFOS, bytes(message) )
-    i2c.writeto_mem(FUSB302_I2C_SLAVE_ADDR, TCPC_REG_FIFOS, bytes(eop_seq) )
+    fusb.tx_byte(FUSB302_I2C_SLAVE_ADDR, TCPC_REG_FIFOS, bytes(sop_seq) )
+    fusb.tx_byte(FUSB302_I2C_SLAVE_ADDR, TCPC_REG_FIFOS, bytes(message) )
+    fusb.tx_byte(FUSB302_I2C_SLAVE_ADDR, TCPC_REG_FIFOS, bytes(eop_seq) )
 
     sent_messages.append(message)
 
