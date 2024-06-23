@@ -47,26 +47,6 @@ def request_pps_pdo(num, voltage, current):
 #
 ########################
 
-vdm_commands = [
-    "Reserved",
-    "Discover Identity",
-    "Discover SVIDs",
-    "Discover Modes",
-    "Enter Mode",
-    "Exit Mode",
-    "Attention"]
-
-svids = {
-    0xff00: 'SID',
-    0xff01: 'DisplayPort',
-}
-
-dp_commands = {
-    0x10: "DP Status Update",
-    0x11: "DP Configure"}
-
-vdm_cmd_types = ["REQ", "ACK", "NAK", "BUSY"]
-
 # reply-with-hardcoded code
 
 def react_vdm(d):
@@ -191,42 +171,6 @@ def parse_vdm(d):
         vdmd = [data[1] & 0x7f, data[0]]
         d["vdm_d"] = vdmd
 
-vdm_dp_pin_assg = {
- 0b1:"A",
- 0b10:"B",
- 0b100:"C",
- 0b1000:"D",
- 0b10000:"E",
- 0b100000:"F",
-}
-
-vdm_dp_port_cap = [
- "RES",
- "UFP",
- "DFP",
- "UFP&DFP"
-]
-
-vdm_dp_port_conn = [
- "NC",
- "UFP",
- "DFP",
- "UFP&DFP"
-]
-
-vdm_dp_port_conf = [
- "USB",
- "DFP",
- "DFP",
- "RES"
-]
-
-vdm_dp_sgn = {
- 0b1:"DP",
- 0b10:"USBg2",
- 0b100:"RES1",
- 0b1000:"RES2"
-}
 
 def print_vdm(d):
     if d["vdm_s"]:

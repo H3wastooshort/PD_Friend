@@ -294,13 +294,6 @@ const int8_t polarity_values [8][2] = {
 	{0, 2}    // 111: audio accessory
 };
 
-const String current_values[4] = {
-	"Ra/low",
-	"Rd-Default",
-	"Rd-1.5",
-	"Rd-3.0"
-};
-
 public:
 int8_t* p_pol() {
 	return polarity_values[polarity()];

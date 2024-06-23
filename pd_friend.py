@@ -33,53 +33,6 @@ sent_messages = []
 #
 ########################
 
-control_message_types = [
-    "Reserved",
-    "GoodCRC",
-    "GotoMin",
-    "Accept",
-    "Reject",
-    "Ping",
-    "PS_RDY",
-    "Get_Source_Cap",
-    "Get_Sink_Cap",
-    "DR_Swap",
-    "PR_Swap",
-    "VCONN_Swap",
-    "Wait",
-    "Soft_Reset",
-    "Data_Reset",
-    "Data_Reset_Complete",
-    "Not_Supported",
-    "Get_Source_Cap_Extended",
-    "Get_Status",
-    "FR_Swap",
-    "Get_PPS_Status",
-    "Get_Country_Codes",
-    "Get_Sink_Cap_Extended",
-    "Get_Source_Info",
-    "Get_Revision",
-]
-
-data_message_types = [
-    "Reserved",
-    "Source_Capabilities",
-    "Request",
-    "BIST",
-    "Sink_Capabilities",
-    "Battery_Status",
-    "Alert",
-    "Get_Country_Info",
-    "Enter_USB",
-    "EPR_Request",
-    "EPR_Mode",
-    "Source_Info",
-    "Revision",
-    "Reserved",
-    "Reserved",
-    "Vendor_Defined",
-]
-
 header_starts = [0xe0, 0xc0]
 
 def get_message(get_rxb=get_rxb):
