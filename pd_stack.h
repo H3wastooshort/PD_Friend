@@ -1,9 +1,8 @@
-//PD stack stuff
-#include "pwr_snk.h"
-#include "pwr_src.h"
-#include "other.h"
-template <typename I2C_TYPE>
-class PDStack : public FUSB302<I2C_TYPE>{
+class PDStack {
+FUSB302* fusb;
+PDStack (FUSB302& new_fusb) {
+	fusb = &new_fusb;
+}
 public:
 	void interruptCallback() {
 		

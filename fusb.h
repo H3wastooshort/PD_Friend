@@ -29,13 +29,12 @@ const uint8_t TCPC_REG_FIFOS = 0x43;
 
 using cc_measure_fn_t = uint8_t(*)();
 
-template <typename I2C_TYPE>
 class FUSB302 {
 protected:
-I2C_TYPE* i2c_dev;
+PDFriendI2C* i2c_dev;
 
 public:
-FUSB302(I2C_TYPE& new_i2c) {
+FUSB302(PDFriendI2C& new_i2c) {
 	i2c_dev = &new_i2c;
 }
 
