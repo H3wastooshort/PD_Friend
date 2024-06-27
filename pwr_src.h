@@ -10,7 +10,7 @@ protected:
 
 public:
 	PDStack_SRC(FUSB302 fusb) : PDStack(fusb) {};
-	void set_pdo(const uint8_t* pdo, size_t len) {
+	void set_pdos(const uint32_t pdos[], size_t len) {
 		
 	}
 };
