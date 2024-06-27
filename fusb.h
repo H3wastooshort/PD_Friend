@@ -241,9 +241,12 @@ uint8_t polarity() {
 	//'0b110001';
 }
 
-uint16_t get_interrupts() {
+uint32_t get_interrupts() { //TODO: check if this is correct
 	// return all interrupt registers;
-	return (i2c_dev->readFromRegister(TCPC_REG_INTERRUPTA, 2) << 8) + i2c_dev->readFromRegister(TCPC_REG_INTERRUPT, 1);
+	return
+	((uint32_t)i2c_dev->readFromRegister(TCPC_REG_INTERRUPTB) << 16) +
+	((uint32_t)i2c_dev->readFromRegister(TCPC_REG_INTERRUPTA) << 8) +
+	 (uint32_t)i2c_dev->readFromRegister(TCPC_REG_INTERRUPT);
 
 // interrupts are cleared just by reading them, it seems
 //uint16_t clear_get_interrupts() {
@@ -268,7 +271,7 @@ uint8_t rxb_state_bad() {
 
 uint8_t get_rxb(uint8_t l=80) {
 	// read from FIFO;
-	return i2c_dev->readFromRegister(TCPC_REG_FIFOS, l);
+	return i2c_dev->readFromRegister(TCPC_REG_FIFOS);
 }
 
 void tx_byte(uint8_t data) {
@@ -277,7 +280,7 @@ void tx_byte(uint8_t data) {
 
 uint8_t hard_reset() {
 	i2c_dev->writeToRegister(TCPC_REG_CONTROL3, 0b1000000);
-	return i2c_dev->readFromRegister(TCPC_REG_CONTROL3, 1);
+	return i2c_dev->readFromRegister(TCPC_REG_CONTROL3);
 }
 
 uint8_t enable_cc(uint8_t cc) { //use with find_cc_sink() / find_cc_source()
