@@ -72,6 +72,16 @@ PDStack (FUSB302& new_fusb) {
 	fusb = &new_fusb;
 }
 
+	void init_universal() {
+		fusb->reset();
+		fusb->power();
+		fusb->unmask_all();
+	}
+
+	void disconnect() { //
+		
+	}
+
 	void interruptCallback() {
 		
 	}

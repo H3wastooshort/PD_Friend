@@ -30,6 +30,7 @@ const uint8_t TCPC_REG_FIFOS = 0x43;
 class FUSB302 {
 protected:
 PDFriendI2C* i2c_dev;
+uint8_t host_current=0b10;
 
 public:
 FUSB302(PDFriendI2C& new_i2c) {
@@ -77,6 +78,13 @@ void enable_pullups() {
 	x |= 0b11000000;
 	i2c_dev->writeToRegister( 0x02, x);
 }
+
+/*void pullups(uint8_t level) { //TODO: everything: 0=off, 1=USB/500mA, 2=1.5A, 3= 3A
+	// enable host pullups on CC pins, disable pulldowns;
+	uint8_t x = i2c_dev->readFromRegister(0x02);
+	x |= 0b11000000;
+	i2c_dev->writeToRegister( 0x02, x);
+}*/
 
 void set_mdac(uint8_t value) {
 	uint8_t x = i2c_dev->readFromRegister(0x04);
@@ -130,8 +138,6 @@ uint8_t find_cc_sink() {
 	return cc;
 }
 
-uint8_t host_current=0b10;
-
 uint8_t find_cc_source() {
 	// read CC pins and see which one senses the correct host current;
 	read_cc(1);
@@ -173,7 +179,7 @@ void set_controls_source() {
 	uint8_t ctrl0 = 0b00000000; // unmask all interrupts; don't autostart TX;
 	ctrl0 |= host_current << 2; // set host current advertisement pullups;
 	i2c_dev->writeToRegister(TCPC_REG_CONTROL0, ctrl0);
-	i2c_dev->writeToRegister( 0x06, ctrl0);
+	i2c_dev->writeToRegister(TCPC_REG_CONTROL0, ctrl0);
 	// boot: 0b00000110;
 	uint8_t ctrl3 = 0b00000110; // no automatic packet retries;
 	i2c_dev->writeToRegister(TCPC_REG_CONTROL3, ctrl3);
@@ -278,7 +284,7 @@ uint8_t hard_reset() {
 	return i2c_dev->readFromRegister(TCPC_REG_CONTROL3);
 }
 
-uint8_t enable_cc(uint8_t cc) { //use with find_cc_sink() / find_cc_source()
+uint8_t set_cc(uint8_t cc) { //use with find_cc_sink() / find_cc_source()
 	flush_receive();
 	enable_tx(cc);
 	read_cc(cc);
