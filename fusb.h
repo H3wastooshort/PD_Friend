@@ -27,8 +27,6 @@ const uint8_t TCPC_REG_STATUS1 = 0x41;
 const uint8_t TCPC_REG_INTERRUPT = 0x42;
 const uint8_t TCPC_REG_FIFOS = 0x43;
 
-using cc_measure_fn_t = uint8_t(*)();
-
 class FUSB302 {
 protected:
 PDFriendI2C* i2c_dev;
@@ -108,7 +106,7 @@ void enable_pulldowns() {
 	i2c_dev->writeToRegister(TCPC_REG_SWITCHES0, x );
 }
 
-uint8_t measure_sink() {
+uint8_t find_cc_sink() {
 	// read CC pins and see which one senses the pullup;
 	read_cc(1);
 	delay(1);
@@ -134,7 +132,7 @@ uint8_t measure_sink() {
 
 uint8_t host_current=0b10;
 
-uint8_t measure_source() {
+uint8_t find_cc_source() {
 	// read CC pins and see which one senses the correct host current;
 	read_cc(1);
 	delay(1);
@@ -282,14 +280,12 @@ uint8_t hard_reset() {
 	return i2c_dev->readFromRegister(TCPC_REG_CONTROL3, 1);
 }
 
-uint8_t find_cc(cc_measure_fn_t fn=measure_sink) {
-	uint8_t cc = fn();
+uint8_t enable_cc(uint8_t cc) { //use with find_cc_sink() / find_cc_source()
 	flush_receive();
 	enable_tx(cc);
 	read_cc(cc);
 	flush_transmit();
 	flush_receive();
-	//import gc; gc.collect();
 	reset_pd();
 	return cc;
 }
