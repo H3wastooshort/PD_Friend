@@ -62,7 +62,7 @@ void read_cc(uint8_t cc) {
 	// enable a CC pin for reading;
 	if (cc > 2) return;
 	uint8_t x = i2c_dev->readFromRegister(TCPC_REG_SWITCHES0);
-	uint8_t x1 = x;
+	//uint8_t x1 = x;
 	uint8_t clear_mask = ~0b1100 & 0xFF;
 	x &= clear_mask;
 	const uint8_t masks[3] = {0b0, 0b100, 0b1000};
