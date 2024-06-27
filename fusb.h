@@ -188,7 +188,7 @@ void set_wake(uint8_t state) {
 	uint8_t clear_mask = ~(1 << 3) & 0xFF;
 	ctrl2 &= clear_mask;
 	if (state)
-		ctrl2 | (1 << 3);
+		ctrl2 |= (1 << 3);
 	i2c_dev->writeToRegister( 0x08, ctrl2);
 }
 
@@ -209,7 +209,7 @@ void flush_transmit() {
 void enable_tx(uint8_t cc) {
 	// enables switch on either CC1 or CC2;
 	uint8_t x = i2c_dev->readFromRegister(TCPC_REG_SWITCHES1);
-	uint8_t x1 = x;
+	//uint8_t x1 = x;
 	uint8_t mask = cc == 2 ? 0b10 :  0b1;
 	x &= 0b10011100; // clearing both TX bits && revision bits;
 	x |= mask;
@@ -247,27 +247,22 @@ uint32_t get_interrupts() { //TODO: check if this is correct
 	((uint32_t)i2c_dev->readFromRegister(TCPC_REG_INTERRUPTB) << 16) +
 	((uint32_t)i2c_dev->readFromRegister(TCPC_REG_INTERRUPTA) << 8) +
 	 (uint32_t)i2c_dev->readFromRegister(TCPC_REG_INTERRUPT);
+}
 
 // interrupts are cleared just by reading them, it seems
-//uint16_t clear_get_interrupts() {
+//void clear_interrupts() {
 //	// clear interrupt
-//	i2c_dev->writeToRegister(TCPC_REG_INTERRUPTA, 0);
-//	i2c_dev->writeToRegister(TCPC_REG_INTERRUPT, 0);
-}
+//	i2c_dev->writeToRegister(TCPC_REG_INTERRUPTA);
+//	i2c_dev->writeToRegister(TCPC_REG_INTERRUPT);
+//}
 
-// this is a way better way to do things than the following function -
-// the read loop should be ported to this function, and the next ome deleted
-uint8_t rxb_state() {
+
+uint8_t rxb_state() { //this function has been altered! now returns 2 bits
 	// get read buffer interrupt states - (rx buffer empty, rx buffer full);
 	uint8_t st = i2c_dev->readFromRegister(TCPC_REG_STATUS1);
-	return ((st & 0b100000) >> 5, (st & 0b10000) >> 4);
+	return (st & 0b100000) >> 4 | (st & 0b10000) >> 4;
 }
 
-// TODO: yeet
-uint8_t rxb_state_bad() {
-	uint8_t st = i2c_dev->readFromRegister(TCPC_REG_STATUS1);
-	return ((st & 0b110000) >> 4, (st & 0b11000000) >> 6);
-}
 
 uint8_t get_rxb(uint8_t l=80) {
 	// read from FIFO;
@@ -309,7 +304,7 @@ const int8_t polarity_values [8][2] = {
 };
 
 public:
-int8_t* p_pol() {
+const int8_t* p_pol() {
 	return polarity_values[polarity()];
 }
 
