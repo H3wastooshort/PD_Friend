@@ -1,6 +1,6 @@
 #include "debug_text.h"
 #include "fusb.h"
+#include "pd_stack.h"
 #include "pwr_snk.h"
 #include "pwr_src.h"
 #include "other.h"
-#include "pd_stack.h"
