@@ -56,25 +56,37 @@ class PDStack { //use this as the base for your own implementation
 protected:
 FUSB302* fusb;
 
-virtual void do_add_msg_resp(uint8_t* msg, size_t len) { //this gets replaced by SRC/SNK code
+public:
+
+void do_other_msg_resp(uint8_t* msg, size_t len) { //call this, when you dont want to deal with a packet.
+	if (is_data_msg(msg,len)) {
+		switch (get_data_msg_type(msg,len)) {
+			
+		}
+	}
+	
+	else {
+		switch (get_ctrl_msg_type(msg,len)) {
+			
+		}
+	}
+	
+	
 	send_ctrl_msg(PDM_Not_Supported);
 }
 
-void do_msg_resp(uint8_t* msg, size_t len) {
-	switch(0) { //reply to common messages
-		default: do_add_msg_resp(msg,len); break;
-	}
-}
-
-bool get_msg_type(uint8_t& buffer, size_t buffer_len) { //returns true for data messages
+bool is_data_msg(uint8_t* msg, size_t len) {
 	return false;
 }
 
-void handle_base() {
+ctrl_msg_type_t get_ctrl_msg_type(uint8_t* msg, size_t len) {
 	
 }
 
-public:
+data_msg_type_t get_data_msg_type(uint8_t* msg, size_t len) {
+	
+}
+
 PDStack (FUSB302& new_fusb) {
 	fusb = &new_fusb;
 }
@@ -92,14 +104,6 @@ PDStack (FUSB302& new_fusb) {
 	void disconnect() { //
 		
 	}
-
-	void interruptCallback() {
-		
-	}
-	virtual void handle() {
-		handle_base();
-	}
-
 
 	void send_ctrl_msg(ctrl_msg_type_t msg_type) {
 		
