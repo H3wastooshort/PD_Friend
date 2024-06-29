@@ -61,13 +61,13 @@ public:
 void do_other_msg_resp(uint8_t* msg, size_t len) { //call this, when you dont want to deal with a packet.
 	if (is_data_msg(msg,len)) {
 		switch (get_data_msg_type(msg,len)) {
-			
+			default: break;
 		}
 	}
 	
 	else {
 		switch (get_ctrl_msg_type(msg,len)) {
-			
+			default: break;
 		}
 	}
 	
@@ -109,7 +109,7 @@ PDStack (FUSB302& new_fusb) {
 		
 	}
 
-	void send_data_msg(data_msg_type_t msg_type, uint8_t* data) {
+	void send_data_msg(data_msg_type_t msg_type, uint8_t* data, size_t data_len) {
 		
 	}
 };

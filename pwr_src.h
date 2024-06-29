@@ -4,7 +4,7 @@ public:
 PDStack_SRC(FUSB302 fusb) : PDStack(fusb) {};
 
 void init_src() {
-  pd.init_universal();
+  init_universal();
   fusb->set_controls_source();
   fusb->set_roles(true, true);
   fusb->disable_pulldowns();
@@ -30,4 +30,4 @@ void detach_src() {
 
 void set_analog_host_current(uint8_t hc) {
 }
-}
+};
