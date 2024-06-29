@@ -30,7 +30,7 @@ const uint8_t TCPC_REG_FIFOS = 0x43;
 class FUSB302 {
 protected:
 PDFriendI2C* i2c_dev;
-uint8_t host_current=0b10;
+uint8_t host_current=0b01; //USB default
 
 public:
 FUSB302(PDFriendI2C& new_i2c) {
@@ -73,10 +73,22 @@ void read_cc(uint8_t cc) {
 }
 
 void enable_pullups() {
-	// enable host pullups on CC pins, disable pulldowns;
-	uint8_t x = i2c_dev->readFromRegister(0x02);
+	// enable host pullups on CC pins;
+	uint8_t x = i2c_dev->readFromRegister(TCPC_REG_SWITCHES0);
 	x |= 0b11000000;
-	i2c_dev->writeToRegister( 0x02, x);
+	i2c_dev->writeToRegister(TCPC_REG_SWITCHES0, x);
+}
+
+void disable_pullups() {
+	// disable host pullups on CC pins;
+	uint8_t x = i2c_dev->readFromRegister(TCPC_REG_SWITCHES0);
+	x &= 0b00111111;
+	i2c_dev->writeToRegister(TCPC_REG_SWITCHES0, x);
+}
+
+void set_host_current(uint8_t new_hc) {
+	host_current = new_hc;
+	enable_pullups();
 }
 
 /*void pullups(uint8_t level) { //TODO: everything: 0=off, 1=USB/500mA, 2=1.5A, 3= 3A
@@ -103,14 +115,14 @@ void enable_sop() {
 
 void disable_pulldowns() {
 	uint8_t x = i2c_dev->readFromRegister(TCPC_REG_SWITCHES0);
-	uint8_t clear_mask = ~0b11 & 0xFF;
+	uint8_t clear_mask = ~0b00000011 & 0xFF;
 	x &= clear_mask;
 	i2c_dev->writeToRegister(TCPC_REG_SWITCHES0, x );
 }
 
 void enable_pulldowns() {
 	uint8_t x = i2c_dev->readFromRegister(TCPC_REG_SWITCHES0);
-	x |= 0b11;
+	x |= 0b00000011;
 	i2c_dev->writeToRegister(TCPC_REG_SWITCHES0, x );
 }
 
@@ -190,12 +202,12 @@ void set_controls_source() {
 
 void set_wake(uint8_t state) {
 	// boot: 0b00000010;
-	uint8_t ctrl2 = i2c_dev->readFromRegister(0x08);
+	uint8_t ctrl2 = i2c_dev->readFromRegister(TCPC_REG_CONTROL2);
 	uint8_t clear_mask = ~(1 << 3) & 0xFF;
 	ctrl2 &= clear_mask;
 	if (state)
 		ctrl2 |= (1 << 3);
-	i2c_dev->writeToRegister( 0x08, ctrl2);
+	i2c_dev->writeToRegister(TCPC_REG_CONTROL2, ctrl2);
 }
 
 void flush_receive() {

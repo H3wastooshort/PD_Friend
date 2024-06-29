@@ -101,8 +101,11 @@ PDStack (FUSB302& new_fusb) {
 		fusb->unmask_all();
 	}
 
-	void disconnect() { //
-		
+	void detach() { //
+		fusb->disable_pullups();
+		fusb->disable_pulldowns();
+		fusb->set_wake(false);
+		fusb->set_cc(0);
 	}
 
 	void send_ctrl_msg(ctrl_msg_type_t msg_type) {

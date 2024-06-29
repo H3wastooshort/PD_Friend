@@ -23,11 +23,4 @@ bool attach_src() {
   fusb->set_cc(cc);
   return true;
 }
-
-void detach_src() {
-  //fusb->disable_pullups(); //TODO
-}
-
-void set_analog_host_current(uint8_t hc) {
-}
 };
