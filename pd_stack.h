@@ -52,7 +52,7 @@ using pdo_t = struct pdo_struct{
 
 using bool_callback_t = bool(*)();
 
-class PDStack {
+class PDStack { //use this as the base for your own implementation
 protected:
 FUSB302* fusb;
 
