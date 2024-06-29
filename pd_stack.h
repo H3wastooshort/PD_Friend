@@ -45,6 +45,13 @@ enum data_msg_type_t {
 	PDM_Vendor_Defined=15
 };
 
+using pdo_t = struct pdo_struct{
+	uint16_t voltage;
+	uint16_t current;
+};
+
+using bool_callback_t = bool(*)();
+
 class PDStack {
 protected:
 FUSB302* fusb;
@@ -63,7 +70,7 @@ bool get_msg_type(uint8_t& buffer, size_t buffer_len) { //returns true for data 
 	return false;
 }
 
-void send_ctrl_msg(ctrl_msg_type_t msg_type) {
+void handle_base() {
 	
 }
 
@@ -71,6 +78,10 @@ public:
 PDStack (FUSB302& new_fusb) {
 	fusb = &new_fusb;
 }
+
+	pdo_t parse_pdo(uint8_t* buf,size_t len) {
+		
+	}
 
 	void init_universal() {
 		fusb->reset();
@@ -85,7 +96,16 @@ PDStack (FUSB302& new_fusb) {
 	void interruptCallback() {
 		
 	}
-	void handle() {
+	virtual void handle() {
+		handle_base();
+	}
+
+
+	void send_ctrl_msg(ctrl_msg_type_t msg_type) {
+		
+	}
+
+	void send_data_msg(data_msg_type_t msg_type, uint8_t* data) {
 		
 	}
 };
