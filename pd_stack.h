@@ -59,31 +59,27 @@ FUSB302* fusb;
 public:
 
 void do_other_msg_resp(uint8_t* msg, size_t len) { //call this, when you dont want to deal with a packet.
-	if (is_data_msg(msg,len)) {
+	if (is_data_msg(msg,len)) 
 		switch (get_data_msg_type(msg,len)) {
-			default: break;
+			default: send_ctrl_msg(PDM_Not_Supported); break;
 		}
-	}
 	
-	else {
+	else
 		switch (get_ctrl_msg_type(msg,len)) {
-			default: break;
+			case PDM_GoodCRC: break;
+			default: send_ctrl_msg(PDM_Not_Supported); break;
 		}
-	}
-	
-	
-	send_ctrl_msg(PDM_Not_Supported);
 }
 
-bool is_data_msg(uint8_t* msg, size_t len) {
+static bool is_data_msg(uint8_t* msg, size_t len) {
 	return false;
 }
 
-ctrl_msg_type_t get_ctrl_msg_type(uint8_t* msg, size_t len) {
+static ctrl_msg_type_t get_ctrl_msg_type(uint8_t* msg, size_t len) {
 	
 }
 
-data_msg_type_t get_data_msg_type(uint8_t* msg, size_t len) {
+static data_msg_type_t get_data_msg_type(uint8_t* msg, size_t len) {
 	
 }
 
