@@ -39,6 +39,11 @@ const uint8_t FUSB_I_COMP_CHNG = 0x20;
 const uint8_t FUSB_I_ACTIVITY = 0x40;
 const uint8_t FUSB_I_VBUSOK = 0x80;
 
+//FIFO Tokens
+const uint8_t sop_seq[4] = {0x12, 0x12, 0x12, 0x13/*, 0x80*/};
+const uint8_t eop_seq[4] = {0xff, 0x14, 0xfe, 0xa1};
+
+//FUSB302 class
 class FUSB302 {
 protected:
 PDFriendI2C* i2c_dev;
@@ -312,6 +317,10 @@ void tx_byte(uint8_t data) {
 	i2c_dev->writeToRegister(TCPC_REG_FIFOS, data);
 }
 
+void tx_byte(uint8_t* data, size_t len) {
+	for (size_t i = 0; i < len; i++) i2c_dev->writeToRegister(TCPC_REG_FIFOS, data[i]);
+}
+
 uint8_t hard_reset() {
 	i2c_dev->writeToRegister(TCPC_REG_CONTROL3, 0b1000000);
 	return i2c_dev->readFromRegister(TCPC_REG_CONTROL3);
@@ -326,6 +335,35 @@ uint8_t set_cc(uint8_t cc) { //use with find_cc_sink() / find_cc_source()
 	reset_pd();
 	return cc;
 }
+
+
+//TODO
+void send_command(uint8_t command, uint8_t* data, size_t len, uint8_t msg_id=0xFF, uint8_t rev=0b10) {
+    msg_id = increment_msg_id() if msg_id is None else msg_id
+    obj_count = len(data) // 4
+
+    uint8_t header = {0, 0}; // hoot hoot !
+
+    header[0] |= rev << 6; // PD revision
+    header[0] |= (data_role & 0b1) << 5; // PD revision
+    header[0] |= (command & 0b11111);
+
+    header[1] = power_role & 0b1;
+    header[1] |= (msg_id & 0b111) << 1; // message ID
+    header[1] |= obj_count << 4;
+
+    uint8_t packsym = 0x80 | (sizeof(header) + len);
+
+    tx_byte(TCPC_REG_FIFOS, sop_seq, 4);
+    tx_byte(TCPC_REG_FIFOS, packsym);
+    tx_byte(TCPC_REG_FIFOS, header, 2);
+    tx_byte(TCPC_REG_FIFOS, data, len);
+    tx_byte(TCPC_REG_FIFOS, eop_seq, 4);
+
+    sent_messages.append(message)
+}
+
+
 
 // FUSB toggle logic shorthands
 // currently unused
