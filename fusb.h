@@ -30,14 +30,14 @@ const uint8_t TCPC_REG_INTERRUPT = 0x42;
 const uint8_t TCPC_REG_FIFOS = 0x43;
 
 //Interrupts
-const uint32_t FUSB_I_BC_LVL = 0x01;
-const uint32_t FUSB_I_COLLISION = 0x02;
-const uint32_t FUSB_I_WAKE = 0x04;
-const uint32_t FUSB_I_ALERT = 0x08;
-const uint32_t FUSB_I_CRC_CHK = 0x10;
-const uint32_t FUSB_I_COMP_CHNG = 0x20;
-const uint32_t FUSB_I_ACTIVITY = 0x40;
-const uint32_t FUSB_I_VBUSOK = 0x80;
+const uint8_t FUSB_I_BC_LVL = 0x01;
+const uint8_t FUSB_I_COLLISION = 0x02;
+const uint8_t FUSB_I_WAKE = 0x04;
+const uint8_t FUSB_I_ALERT = 0x08;
+const uint8_t FUSB_I_CRC_CHK = 0x10;
+const uint8_t FUSB_I_COMP_CHNG = 0x20;
+const uint8_t FUSB_I_ACTIVITY = 0x40;
+const uint8_t FUSB_I_VBUSOK = 0x80;
 
 class FUSB302 {
 protected:
