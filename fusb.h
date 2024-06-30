@@ -5,6 +5,8 @@
 ////////////////////////////////////////////////
 
 const uint8_t FUSB302_I2C_SLAVE_ADDR = 0x22;
+
+//Registers
 const uint8_t TCPC_REG_DEVICE_ID = 0x01;
 const uint8_t TCPC_REG_SWITCHES0 = 0x02;
 const uint8_t TCPC_REG_SWITCHES1 = 0x03;
@@ -26,6 +28,16 @@ const uint8_t TCPC_REG_STATUS0 = 0x40;
 const uint8_t TCPC_REG_STATUS1 = 0x41;
 const uint8_t TCPC_REG_INTERRUPT = 0x42;
 const uint8_t TCPC_REG_FIFOS = 0x43;
+
+//Interrupts
+const uint32_t FUSB_I_BC_LVL = 0x01;
+const uint32_t FUSB_I_COLLISION = 0x02;
+const uint32_t FUSB_I_WAKE = 0x04;
+const uint32_t FUSB_I_ALERT = 0x08;
+const uint32_t FUSB_I_CRC_CHK = 0x10;
+const uint32_t FUSB_I_COMP_CHNG = 0x20;
+const uint32_t FUSB_I_ACTIVITY = 0x40;
+const uint32_t FUSB_I_VBUSOK = 0x80;
 
 class FUSB302 {
 protected:
@@ -228,11 +240,21 @@ void enable_tx(uint8_t cc) {
 	// enables switch on either CC1 or CC2;
 	uint8_t x = i2c_dev->readFromRegister(TCPC_REG_SWITCHES1);
 	//uint8_t x1 = x;
-	uint8_t mask = cc == 2 ? 0b10 :  0b1;
+	uint8_t mask = cc & 0b11;
 	x &= 0b10011100; // clearing both TX bits && revision bits;
 	x |= mask;
 	x |= 0b100;
 	x |= 0b10 << 5; // revision 3.0;
+	////print('et', bin(x1), bin(x), cc);
+	i2c_dev->writeToRegister(TCPC_REG_SWITCHES1, x );
+}
+
+void disable_tx() {
+	// enables switch on either CC1 or CC2;
+	uint8_t x = i2c_dev->readFromRegister(TCPC_REG_SWITCHES1);
+	//uint8_t x1 = x;
+	x &= 0b10011100; // clearing both TX bits && revision bits;
+	//TODO: what goes here?
 	////print('et', bin(x1), bin(x), cc);
 	i2c_dev->writeToRegister(TCPC_REG_SWITCHES1, x );
 }
@@ -262,8 +284,8 @@ uint8_t polarity() {
 uint32_t get_interrupts() { //TODO: check if this is correct
 	// return all interrupt registers;
 	return
-	((uint32_t)i2c_dev->readFromRegister(TCPC_REG_INTERRUPTB) << 16) +
-	((uint32_t)i2c_dev->readFromRegister(TCPC_REG_INTERRUPTA) << 8) +
+	((uint32_t)i2c_dev->readFromRegister(TCPC_REG_INTERRUPTB) << 16) &
+	((uint32_t)i2c_dev->readFromRegister(TCPC_REG_INTERRUPTA) << 8) &
 	 (uint32_t)i2c_dev->readFromRegister(TCPC_REG_INTERRUPT);
 }
 
@@ -273,7 +295,6 @@ uint32_t get_interrupts() { //TODO: check if this is correct
 //	i2c_dev->writeToRegister(TCPC_REG_INTERRUPTA);
 //	i2c_dev->writeToRegister(TCPC_REG_INTERRUPT);
 //}
-
 
 uint8_t rxb_state() { //this function has been altered! now returns 2 bits
 	// get read buffer interrupt states - (rx buffer empty, rx buffer full);
