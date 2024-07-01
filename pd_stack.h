@@ -95,10 +95,23 @@ PDStack (FUSB302& new_fusb) {
 		
 	}
 
+	void send_ctrl_msg(ctrl_msg_type_t msg_type) {
+		
+	}
+
+	void send_data_msg(data_msg_type_t msg_type, uint8_t* data, size_t data_len) {
+		
+	}
+
 	void init_universal() {
 		fusb->reset();
 		fusb->power();
 		fusb->unmask_all();
+	}
+
+	void reset() {
+		send_ctrl_msg(PDM_Soft_Reset);
+		fusb->reset_pd();
 	}
 
 	void detach() { //
@@ -108,11 +121,5 @@ PDStack (FUSB302& new_fusb) {
 		fusb->set_cc(0);
 	}
 
-	void send_ctrl_msg(ctrl_msg_type_t msg_type) {
-		
-	}
 
-	void send_data_msg(data_msg_type_t msg_type, uint8_t* data, size_t data_len) {
-		
-	}
 };
