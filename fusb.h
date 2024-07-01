@@ -48,6 +48,8 @@ class FUSB302 {
 protected:
 PDFriendI2C* i2c_dev;
 uint8_t host_current=0b01; //USB default
+bool power_role = 0;
+bool data_role = 0;
 
 public:
 FUSB302(PDFriendI2C& new_i2c) {
@@ -264,7 +266,10 @@ void disable_tx() {
 	i2c_dev->writeToRegister(TCPC_REG_SWITCHES1, x );
 }
 
-void set_roles(bool power_role = 0, bool data_role = 0) {
+void set_roles(bool power_role_new = 0, bool data_role_new = 0) {
+	data_role=data_role_new;
+	power_role=power_role_new;
+	
 	uint8_t x = i2c_dev->readFromRegister(TCPC_REG_SWITCHES1);
 	x &= 0b01101111; // clearing both role bits
 	x |= power_role << 7;
@@ -313,11 +318,11 @@ uint8_t get_rxb(uint8_t l=80) {
 	return i2c_dev->readFromRegister(TCPC_REG_FIFOS);
 }
 
-void tx_byte(uint8_t data) {
+void tx_byte(const uint8_t data) {
 	i2c_dev->writeToRegister(TCPC_REG_FIFOS, data);
 }
 
-void tx_byte(uint8_t* data, size_t len) {
+void tx_byte(const uint8_t* data, const size_t len) {
 	for (size_t i = 0; i < len; i++) i2c_dev->writeToRegister(TCPC_REG_FIFOS, data[i]);
 }
 
@@ -338,11 +343,8 @@ uint8_t set_cc(uint8_t cc) { //use with find_cc_sink() / find_cc_source()
 
 
 //TODO
-void send_command(uint8_t command, uint8_t* data, size_t len, uint8_t msg_id=0xFF, uint8_t rev=0b10) {
-    msg_id = increment_msg_id() if msg_id is None else msg_id
-    obj_count = len(data) // 4
-
-    uint8_t header = {0, 0}; // hoot hoot !
+void send_command(uint8_t command, uint8_t* data, size_t len, uint8_t obj_count, uint8_t msg_id, uint8_t rev=0b10) {
+    uint8_t header[2] = {0, 0}; // hoot hoot !
 
     header[0] |= rev << 6; // PD revision
     header[0] |= (data_role & 0b1) << 5; // PD revision
@@ -354,13 +356,13 @@ void send_command(uint8_t command, uint8_t* data, size_t len, uint8_t msg_id=0xF
 
     uint8_t packsym = 0x80 | (sizeof(header) + len);
 
-    tx_byte(TCPC_REG_FIFOS, sop_seq, 4);
-    tx_byte(TCPC_REG_FIFOS, packsym);
-    tx_byte(TCPC_REG_FIFOS, header, 2);
-    tx_byte(TCPC_REG_FIFOS, data, len);
-    tx_byte(TCPC_REG_FIFOS, eop_seq, 4);
+    tx_byte(sop_seq, 4);
+    tx_byte(packsym);
+    tx_byte(header, 2);
+    tx_byte(data, len);
+    tx_byte(eop_seq, 4);
 
-    sent_messages.append(message)
+    //sent_messages.append(message)
 }
 
 

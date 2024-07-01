@@ -91,6 +91,10 @@ PDStack (FUSB302& new_fusb) {
 		
 	}
 
+	void read_msg(uint8_t* buf, size_t len) {
+		
+	}
+
 	void init_universal() {
 		fusb->reset();
 		fusb->power();
