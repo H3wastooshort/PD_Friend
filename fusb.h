@@ -321,7 +321,7 @@ uint8_t rxb_state() { //this function has been altered! now returns 2 bits
 }
 
 
-uint8_t get_rxb(uint8_t l=80) {
+uint8_t get_rxb() {
 	// read from FIFO;
 	return i2c_dev->readFromRegister(TCPC_REG_FIFOS);
 }
@@ -394,6 +394,23 @@ void send_data_msg(uint8_t command, uint8_t* data, size_t len, uint8_t obj_count
     //sent_messages.append(message)
 }
 
+public:
+size_t read_msg(uint8_t& buf, size_t max_len) {
+	if ((get_rxb()>>5)&0b111 != 0b111) return 0; //check if starts with SOP
+	
+	//read header
+	buf[0] = get_rxb();
+	buf[1] = get_rxb();
+	
+	uint8_t num_dat_obj = (buf[1] & 0b01110000) >> 4; //get num of Data objects, each 32bits
+	if (num_dat_obj > 7) return 0;
+	
+	for (uint8_t i = 0; i < num_dat_obj; i++)
+		for (uint8_t b = 0; b < 4; b++)
+			buf[2+i+b] = get_rxb();
+	
+	return 2+(num_dat_obj*4);
+}
 
 // FUSB toggle logic shorthands
 // currently unused
