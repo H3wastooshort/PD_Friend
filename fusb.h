@@ -334,6 +334,10 @@ void tx_byte(const uint8_t* data, const size_t len) {
 	for (size_t i = 0; i < len; i++) i2c_dev->writeToRegister(TCPC_REG_FIFOS, data[i]);
 }
 
+void tx_byte(const uint32_t data) {
+	for (uint8_t b = 0; b < 4; b++) i2c_dev->writeToRegister(TCPC_REG_FIFOS, data >> 8*i);
+}
+
 uint8_t hard_reset() {
 	i2c_dev->writeToRegister(TCPC_REG_CONTROL3, 0b1000000);
 	return i2c_dev->readFromRegister(TCPC_REG_CONTROL3);
@@ -372,7 +376,7 @@ void send_ctrl_msg(uint8_t command, uint8_t msg_id, uint8_t rev=0b10) {
     //sent_messages.append(message)
 }
 
-void send_data_msg(uint8_t command, uint8_t* data, size_t len, uint8_t obj_count, uint8_t msg_id, uint8_t rev=0b10) {
+void send_data_msg(uint8_t command, uint32_t* data_objects, uint8_t num_data_objects, uint8_t msg_id, uint8_t rev=0b10) {
     uint8_t header[2] = {0, 0}; // hoot hoot !
 
     header[0] |= rev << 6; // PD revision
@@ -381,14 +385,14 @@ void send_data_msg(uint8_t command, uint8_t* data, size_t len, uint8_t obj_count
 
     header[1] = power_role & 0b1;
     header[1] |= (msg_id & 0b111) << 1; // message ID
-    header[1] |= obj_count << 4;
+    header[1] |= num_data_objects << 4;
 
     uint8_t packsym = 0x80 | (sizeof(header) + len);
 
     tx_byte(sop_seq, 4);
     tx_byte(packsym);
     tx_byte(header, 2);
-    tx_byte(data, len);
+    for (uint8_t i = 0; i < num_dat_objects; i++) tx_byte(data_objects[i]);
     tx_byte(eop_seq, 4);
 
     //sent_messages.append(message)

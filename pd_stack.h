@@ -55,6 +55,7 @@ using bool_callback_t = bool(*)();
 class PDStack { //use this as the base for your own implementation
 protected:
 FUSB302* fusb;
+uint8_t current_message_id = 0;
 
 public:
 
@@ -87,20 +88,25 @@ PDStack (FUSB302& new_fusb) {
 	fusb = &new_fusb;
 }
 
-	pdo_t parse_pdo(uint8_t* buf,size_t len) {
+	pdo_t parse_pdo(uint8_t& buf,size_t len) {
 		
 	}
 
-	void read_msg(uint8_t* buf, size_t len) {
+	void read_msg(uint8_t& buf, size_t len) {
 		
 	}
 
 	void send_ctrl_msg(ctrl_msg_type_t msg_type) {
-		
+		fusb->send_ctrl_msg(msg_type, current_message_id);
+		current_message_id++;
+		current_message_id %= 32;
 	}
 
-	void send_data_msg(data_msg_type_t msg_type, uint8_t* data, size_t data_len) {
-		
+	bool send_data_msg(data_msg_type_t msg_type, uint32_t* data_objects, uint8_t num_data_objects) {
+		if (num_data_objects > 7) return;
+		fusb->send_data_msg(msg_type, current_message_id, data, num_data_objects);
+		current_message_id++;
+		current_message_id %= 32;
 	}
 
 	void init_universal() {
@@ -112,6 +118,7 @@ PDStack (FUSB302& new_fusb) {
 	void reset() {
 		send_ctrl_msg(PDM_Soft_Reset);
 		fusb->reset_pd();
+		current_message_id=0;
 	}
 
 	void detach() { //
