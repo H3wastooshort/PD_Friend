@@ -280,9 +280,17 @@ void set_roles(bool power_role_new = 0, bool data_role_new = 0) {
 void power() {
 	// enables all power circuits
 	uint8_t x = i2c_dev->readFromRegister(TCPC_REG_POWER);
-	uint8_t mask = 0b1111;
+	const uint8_t mask = 0b1111;
 	x |= mask;
-	i2c_dev->writeToRegister(TCPC_REG_POWER, x );
+	i2c_dev->writeToRegister(TCPC_REG_POWER, x);
+}
+
+void enable_retries() {
+	// enables packet retries
+	uint8_t x = i2c_dev->readFromRegister(TCPC_REG_CONTROL3);
+	const uint8_t mask = 0x07;
+	x |= mask;
+	i2c_dev->writeToRegister(TCPC_REG_CONTROL3, x);
 }
 
 uint8_t polarity() {
@@ -364,7 +372,6 @@ void send_command(uint8_t command, uint8_t* data, size_t len, uint8_t obj_count,
 
     //sent_messages.append(message)
 }
-
 
 
 // FUSB toggle logic shorthands
