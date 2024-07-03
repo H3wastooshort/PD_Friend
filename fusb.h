@@ -351,7 +351,28 @@ uint8_t set_cc(uint8_t cc) { //use with find_cc_sink() / find_cc_source()
 
 
 //TODO
-void send_command(uint8_t command, uint8_t* data, size_t len, uint8_t obj_count, uint8_t msg_id, uint8_t rev=0b10) {
+void send_ctrl_msg(uint8_t command, uint8_t msg_id, uint8_t rev=0b10) {
+    uint8_t header[2] = {0, 0}; // hoot hoot !
+
+    header[0] |= rev << 6; // PD revision
+    header[0] |= (data_role & 0b1) << 5; // PD revision
+    header[0] |= (command & 0b11111);
+
+    header[1] = power_role & 0b1;
+    header[1] |= (msg_id & 0b111) << 1; // message ID
+    //header[1] |= 0;
+
+    constexpr uint8_t packsym = 0x80 | (sizeof(header) + len);
+
+    tx_byte(sop_seq, 4);
+    tx_byte(packsym);
+    tx_byte(header, 2);
+    tx_byte(eop_seq, 4);
+
+    //sent_messages.append(message)
+}
+
+void send_data_msg(uint8_t command, uint8_t* data, size_t len, uint8_t obj_count, uint8_t msg_id, uint8_t rev=0b10) {
     uint8_t header[2] = {0, 0}; // hoot hoot !
 
     header[0] |= rev << 6; // PD revision
