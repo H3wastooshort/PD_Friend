@@ -335,7 +335,7 @@ void tx_byte(const uint8_t* data, const size_t len) {
 }
 
 void tx_byte(const uint32_t data) {
-	for (uint8_t b = 0; b < 4; b++) i2c_dev->writeToRegister(TCPC_REG_FIFOS, data >> 8*i);
+	for (uint8_t b = 0; b < 4; b++) i2c_dev->writeToRegister(TCPC_REG_FIFOS, data >> 8*b);
 }
 
 uint8_t hard_reset() {
@@ -366,7 +366,7 @@ void send_ctrl_msg(uint8_t command, uint8_t msg_id, uint8_t rev=0b10) {
     header[1] |= (msg_id & 0b111) << 1; // message ID
     //header[1] |= 0;
 
-    constexpr uint8_t packsym = 0x80 | (sizeof(header) + len);
+    constexpr uint8_t packsym = 0x80 | sizeof(header);
 
     tx_byte(sop_seq, 4);
     tx_byte(packsym);
@@ -387,20 +387,20 @@ void send_data_msg(uint8_t command, uint32_t* data_objects, uint8_t num_data_obj
     header[1] |= (msg_id & 0b111) << 1; // message ID
     header[1] |= num_data_objects << 4;
 
-    uint8_t packsym = 0x80 | (sizeof(header) + len);
+    uint8_t packsym = 0x80 | (sizeof(header) + (num_data_objects*4));
 
     tx_byte(sop_seq, 4);
     tx_byte(packsym);
     tx_byte(header, 2);
-    for (uint8_t i = 0; i < num_dat_objects; i++) tx_byte(data_objects[i]);
+    for (uint8_t i = 0; i < num_data_objects; i++) tx_byte(data_objects[i]);
     tx_byte(eop_seq, 4);
 
     //sent_messages.append(message)
 }
 
 public:
-size_t read_msg(uint8_t& buf, size_t max_len) {
-	if ((get_rxb()>>5)&0b111 != 0b111) return 0; //check if starts with SOP
+size_t read_msg(uint8_t* buf, size_t max_len) {
+	if (((get_rxb()>>5)&0b111) != 0b111) return 0; //check if starts with SOP
 	
 	//read header
 	buf[0] = get_rxb();

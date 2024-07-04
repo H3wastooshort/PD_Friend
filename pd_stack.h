@@ -88,11 +88,11 @@ PDStack (FUSB302& new_fusb) {
 	fusb = &new_fusb;
 }
 
-	pdo_t parse_pdo(uint8_t& buf,size_t len) {
+	pdo_t parse_pdo(uint8_t* buf,size_t len) {
 		
 	}
 
-	void read_msg(uint8_t& buf, size_t len) {
+	void read_msg(uint8_t* buf, size_t len) {
 		
 	}
 
@@ -103,10 +103,11 @@ PDStack (FUSB302& new_fusb) {
 	}
 
 	bool send_data_msg(data_msg_type_t msg_type, uint32_t* data_objects, uint8_t num_data_objects) {
-		if (num_data_objects > 7) return;
-		fusb->send_data_msg(msg_type, current_message_id, data, num_data_objects);
+		if (num_data_objects > 7) return false;
+		fusb->send_data_msg(msg_type, current_message_id, data_objects, num_data_objects);
 		current_message_id++;
 		current_message_id %= 32;
+		return true;
 	}
 
 	void init_universal() {
