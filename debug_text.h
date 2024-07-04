@@ -1,7 +1,5 @@
 #ifdef FUSB_DEBUG_SERIAL
 
-#include <map>
-
 const String current_values[4] = {
 	"Ra/low",
 	"Rd-Default",
@@ -59,12 +57,6 @@ const String data_message_types[16] = {
 };
 
 
-//PDOs
-const std::map<pdo_type_t,String> {
-	
-};
-
-
 //VDMs
 const String vdm_commands[7] = {
     "Reserved",
@@ -75,6 +67,13 @@ const String vdm_commands[7] = {
     "Exit Mode",
     "Attention"
 };
+
+//PDOs
+
+
+
+/*
+#include <map>
 
 const std::map<uint16_t,String> svids = {
     {0xff00, "SID"},
@@ -124,5 +123,6 @@ const std::map<uint8_t,String> vdm_dp_sgn = {
 	{0b100,"RES1"},
 	{0b1000,"RES2"}
 }
+*/
 
 #endif

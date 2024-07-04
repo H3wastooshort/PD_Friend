@@ -409,11 +409,16 @@ size_t read_msg(uint8_t* buf, size_t max_len) {
 	uint8_t num_dat_obj = (buf[1] & 0b01110000) >> 4; //get num of Data objects, each 32bits
 	if (num_dat_obj > 7) return 0;
 	
-	for (uint8_t i = 0; i < num_dat_obj; i++)
-		for (uint8_t b = 0; b < 4; b++)
-			buf[2+i+b] = get_rxb();
+	//if (2+(num_dat_obj*4) > max_len) return 0;
 	
-	return 2+(num_dat_obj*4);
+	uint8_t dat_obj_read = 0;
+	for (; dat_obj_read < num_dat_obj; dat_obj_read++) {
+		if (2+((dat_obj_read+1)*4) > max_len) break;
+		for (uint8_t b = 0; b < 4; b++)
+			buf[2+dat_obj_read+b] = get_rxb();
+	}
+	
+	return 2+(dat_obj_read*4);
 }
 
 // FUSB toggle logic shorthands

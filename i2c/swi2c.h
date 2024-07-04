@@ -7,9 +7,25 @@ public:
 	uint8_t readFromRegister(uint8_t reg) {
 		uint8_t dat;
 		i2c->readFromRegister(reg,dat);
+#ifdef FUSB_DEBUG_SERIAL
+		Serial.println();
+		Serial.write('r');
+		Serial.printHex(reg);
+		Serial.write('R');
+		Serial.printHex(dat);
+		Serial.println();
+#endif
 		return dat;
 	}
 	bool writeToRegister(uint8_t reg, uint8_t dat) {
+#ifdef FUSB_DEBUG_SERIAL
+		Serial.println();
+		Serial.write('r');
+		Serial.printHex(reg);
+		Serial.write('W');
+		Serial.printHex(dat);
+		Serial.println();
+#endif
 		return i2c->writeToRegister(reg,dat);
 	}
 };
