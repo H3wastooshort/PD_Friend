@@ -210,7 +210,7 @@ void set_controls_source() {
 	uint8_t ctrl0 = 0b00000000; // unmask all interrupts; don't autostart TX;
 	ctrl0 |= host_current << 2; // set host current advertisement pullups;
 	i2c_dev->writeToRegister(TCPC_REG_CONTROL0, ctrl0);
-	i2c_dev->writeToRegister(TCPC_REG_CONTROL0, ctrl0);
+	i2c_dev->writeToRegister(TCPC_REG_CONTROL0, ctrl0); //TODO:  why twice??????
 	// boot: 0b00000110;
 	uint8_t ctrl3 = 0b00000110; // no automatic packet retries;
 	i2c_dev->writeToRegister(TCPC_REG_CONTROL3, ctrl3);
@@ -301,10 +301,10 @@ uint8_t polarity() {
 
 uint32_t get_interrupts() { //TODO: check if this is correct
 	// return all interrupt registers;
-	return
-	((uint32_t)i2c_dev->readFromRegister(TCPC_REG_INTERRUPTB) << 16) &
-	((uint32_t)i2c_dev->readFromRegister(TCPC_REG_INTERRUPTA) << 8) &
-	 (uint32_t)i2c_dev->readFromRegister(TCPC_REG_INTERRUPT);
+	uint32_t i = i2c_dev->readFromRegister(TCPC_REG_INTERRUPT);
+	uint32_t ia = i2c_dev->readFromRegister(TCPC_REG_INTERRUPTA);
+	uint32_t ib = i2c_dev->readFromRegister(TCPC_REG_INTERRUPTB);
+	return (ib << 16) & (ia << 8) & i;
 }
 
 // interrupts are cleared just by reading them, it seems
