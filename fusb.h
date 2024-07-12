@@ -308,11 +308,12 @@ uint32_t get_interrupts() { //TODO: check if this is correct
 }
 
 // interrupts are cleared just by reading them, it seems
-//void clear_interrupts() {
-//	// clear interrupt
-//	i2c_dev->writeToRegister(TCPC_REG_INTERRUPTA);
-//	i2c_dev->writeToRegister(TCPC_REG_INTERRUPT);
-//}
+void clear_interrupts() {
+	// clear interrupt
+	i2c_dev->writeToRegister(TCPC_REG_INTERRUPT, 0);
+	i2c_dev->writeToRegister(TCPC_REG_INTERRUPTA, 0);
+	i2c_dev->writeToRegister(TCPC_REG_INTERRUPTB, 0);
+}
 
 uint8_t rxb_state() { //this function has been altered! now returns 2 bits
 	// get read buffer interrupt states - (rx buffer empty, rx buffer full);
