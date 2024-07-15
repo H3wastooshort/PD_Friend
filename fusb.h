@@ -106,7 +106,7 @@ void disable_pullups() {
 }
 
 void set_host_current(uint8_t new_hc) {
-	host_current = new_hc;
+	host_current = new_hc & 0b11;
 	enable_pullups();
 }
 
@@ -186,7 +186,7 @@ uint8_t find_cc_source() {
 		cc = 0;
 	#ifdef FUSB_DEBUG_SERIAL
 		FUSB_DEBUG_SERIAL.println();
-		FUSB_DEBUG_SERIAL.print("m ");
+		FUSB_DEBUG_SERIAL.print("CC ");
 		FUSB_DEBUG_SERIAL.print(cc1_c);
 		FUSB_DEBUG_SERIAL.print(' ');
 		FUSB_DEBUG_SERIAL.print(cc2_c);
