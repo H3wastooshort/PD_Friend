@@ -5,14 +5,15 @@ private:
 public:
 	PDFriendI2C(SWI2C& new_i2c) {i2c = &new_i2c;}
 	uint8_t readFromRegister(uint8_t reg) {
-		uint8_t dat;
-		i2c->readFromRegister(reg,dat);
+		uint8_t dat=0xFF;
+		bool ok = i2c->readFromRegister(reg,dat);
 #ifdef FUSB_DEBUG_SERIAL
 		Serial.println();
 		Serial.write('r');
 		Serial.printHex(reg);
 		Serial.write('R');
 		Serial.printHex(dat);
+		if(!ok) Serial.write('-');
 		Serial.println();
 #endif
 		return dat;
@@ -24,8 +25,12 @@ public:
 		Serial.printHex(reg);
 		Serial.write('W');
 		Serial.printHex(dat);
+#endif
+		bool ok = i2c->writeToRegister(reg,dat);
+#ifdef FUSB_DEBUG_SERIAL
+		if(!ok) Serial.write('-');
 		Serial.println();
 #endif
-		return i2c->writeToRegister(reg,dat);
+		return ok;
 	}
 };
