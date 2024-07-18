@@ -14,6 +14,7 @@ public:
 		Serial.write('R');
 		Serial.printHex(dat);
 		if(!ok) Serial.write('-');
+		if(!i2c->checkStretchTimeout()) Serial.write('S');
 		Serial.println();
 #endif
 		return dat;
@@ -29,6 +30,7 @@ public:
 		bool ok = i2c->writeToRegister(reg,dat);
 #ifdef FUSB_DEBUG_SERIAL
 		if(!ok) Serial.write('-');
+		if(!i2c->checkStretchTimeout()) Serial.write('S');
 		Serial.println();
 #endif
 		return ok;
